@@ -5,5 +5,7 @@ xgboost
 matplotlib
 seaborn
 joblib
-streamlit
+# Streamlit still imports altair.vegalite.v4 — Altair 5+ removed it; pin v4 for cloud deploy
+altair>=4.2.0,<5
+streamlit>=1.28.0,<2
 fpdf2
