@@ -21,12 +21,22 @@ from appliances.pump import load_data as load_pump
 from appliances.hx import load_data as load_hx
 from appliances.pump import get_target_column as pump_target
 from appliances.hx import get_target_column as hx_target
+from appliances.boiler import (
+    load_data as load_boiler,
+    get_target_column as boiler_target
+)
+
+from appliances.gas_turbine import (
+    load_data as load_gas_turbine,
+    get_target_column as gas_turbine_target
+)
 
 
 print("Select Appliance to Evaluate")
 print("1. Pump")
 print("2. Heat Exchanger")
-
+print("3. Boiler")
+print("4. Gas_turbine")
 choice = input("Enter choice: ")
 
 # ---------------- LOAD DATA ----------------
@@ -38,6 +48,14 @@ if choice == "1":
 elif choice == "2":
     df = load_hx("data/heat_exchanger_dataset.csv")
     target_column = hx_target()
+
+elif choice == "3":
+    df = load_boiler("data/Boiler Dataset.csv")
+    target_column = boiler_target()
+
+elif choice == "4":
+    df = load_gas_turbine("data/gas_turbine_dataset.csv")
+    target_column = gas_turbine_target()        
 
 else:
     print("Invalid choice")
