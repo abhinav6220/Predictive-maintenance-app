@@ -252,15 +252,6 @@ def get_risk_level(probability):
     return "High", "#ef4444"
 
 
-def adjust_risk_level_from_breakdown(risk_text, risk_color, risk_breakdown):
-    highest_risk = max((item["Risk Score"] for item in risk_breakdown), default=0)
-    if highest_risk >= 70:
-        return "High", "#ef4444"
-    if highest_risk >= 40 and risk_text == "Low":
-        return "Medium", "#f59e0b"
-    return risk_text, risk_color
-
-
 def calculate_health_score(probability):
     return round(max(0, min(100, 100 - probability)), 2)
 
@@ -333,7 +324,7 @@ def build_risk_breakdown(appliance, inputs):
                 risk_score(
                     inputs["Hot Inlet Temperature (K)"] - inputs["Cold Outlet Temperature (K)"],
                     75,
-                    100,
+                    190,
                 ),
             ),
         ]
@@ -429,8 +420,13 @@ def hx_physics_required(hot_in, hot_out, cold_out, cold_flow):
     if (hot_in - cold_out) >= 75:
         risk_count += 1
 
-    critical_required = hot_in >= 500 or hot_out >= 450 or cold_out >= 420
-    return critical_required or risk_count >= 2
+    critical_required = (
+        hot_in >= 500
+        or hot_out >= 450
+        or cold_out >= 420
+        or (hot_in - cold_out) >= 190
+    )
+    return critical_required or risk_count >= 3
 
 
 def boiler_risk_flags(flue_temp, boiler_o2, co, nox, so2, dust, eff, gross_load, coal_flow):
@@ -808,7 +804,6 @@ def show_result(appliance, prediction, probability, flags, inputs):
         st.success("System Healthy")
     risk_text, risk_color = get_risk_level(probability)
     risk_breakdown = build_risk_breakdown(appliance, inputs)
-    risk_text, risk_color = adjust_risk_level_from_breakdown(risk_text, risk_color, risk_breakdown)
     st.markdown(
         f"""
         <div style="
